@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程学习管理系统原型</title>
+    <!-- 引入Bootstrap样式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入Font Awesome图标 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #7209b7;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --small-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 自定义样式 */
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-header h3 {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+
+        /* 标签页样式 */
+        .nav-tabs {
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+            padding: 12px 24px;
+            font-weight: 500;
+            border-radius: 0;
+            transition: var(--transition);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            background-color: transparent;
+        }
+
+        .nav-tabs .nav-link:hover:not(.active) {
+            color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        /* 卡片样式 */
+        .page-card {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        .page-card:hover {
+            box-shadow: var(--hover-shadow);
+        }
+
+        .config-section {
+            margin: 24px 0;
+            padding: 20px;
+            border: 1px solid #f0f2f5;
+            border-radius: var(--small-radius);
+            background-color: #fafbfc;
+            transition: var(--transition);
+        }
+
+        .config-section h5 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* 禁用区域样式 */
+        .disabled-section {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* 表单样式优化 */
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            color: #4b5563;
+            margin-bottom: 0;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #d1d5db;
+            border-radius: var(--small-radius);
+            padding: 8px 12px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            outline: none;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            border-radius: var(--small-radius);
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-warning {
+            background-color: #f59e0b;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: #fff;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+        }
+
+        /* 表格样式 */
+        .table {
+            --bs-table-border-color: #e5e7eb;
+        }
+
+        .table thead th {
+            background-color: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+            color: #374151;
+            font-weight: 600;
+            padding: 12px;
+        }
+
+        .table tbody td {
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* 视频容器样式 */
+        .video-container {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            border-radius: var(--small-radius);
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 视频播放核心样式 - 防拖拽 */
+        .video-player {
+            width: 100%;
+            height: 400px;
+            background-color: #000;
+            border-radius: var(--small-radius);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 隐藏原生视频控件，自定义控制栏 */
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 禁用原生控件 */
+            pointer-events: none; 
+        }
+
+        /* 自定义视频控制栏 */
+        .video-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: var(--small-radius);
+            margin-top: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-display {
+            flex: 1;
+            height: 8px;
+            background-color: #374151;
+            border-radius: 100px;
+            /* 核心：禁用点击/拖拽 */
+            pointer-events: none; 
+            position: relative;
+        }
+
+        .progress-bar {
+            border-radius: 100px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            height: 100%;
+            width: 50%;
+        }
+
+        .time-display {
+            color: #fff;
+            font-size: 14px;
+            min-width: 100px;
+        }
+
+        .speed-control {
+            /* 禁用倍速功能，防止快进 */
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .face-capture-tip {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #1f2937;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .warning-text {
+            color: #dc3545;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 窗口切换提示样式 */
+        .window-warning {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(239, 68, 68, 0.9);
+            color: #fff;
+            padding: 20px 40px;
+            border-radius: var(--small-radius);
+            font-size: 16px;
+            z-index: 10;
+            display: none;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .page-card {
+                padding: 20px;
+            }
+
+            .config-section {
+                padding: 15px;
+            }
+
+            .video-container {
+                padding: 15px;
+            }
+
+            .video-player {
+                height: 250px;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <h3>课程学习管理系统</h3>
+        </div>
+
+        <!-- 页面切换导航 -->
+        <ul class="nav nav-tabs" id="pageTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="teacher-tab" data-bs-toggle="tab" data-bs-target="#teacher-page" type="button" role="tab">
+                    <i class="fa fa-user-circle-o me-2"></i>教师管理配置页
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="student-tab" data-bs-toggle="tab" data-bs-target="#student-page" type="button" role="tab">
+                    <i class="fa fa-graduation-cap me-2"></i>学生视频学习页
+                </button>
+            </li>
+        </ul>
+
+        <!-- 教师端配置页面 -->
+        <div class="tab-content" id="pageTabContent">
+            <div class="tab-pane fade show active" id="teacher-page" role="tabpanel">
+                <div class="page-card">
+                    <h4 class="mb-4 text-dark">Python编程基础 - 2024级计科1班 <span class="text-muted fs-6">配置中心</span></h4>
+                    
+                    <!-- 1. 人脸识别监控配置 -->
+                    <div class="config-section">
+                        <h5><i class="fa fa-id-card-o me-2"></i>一、人脸识别监控设置</h5>
+                        <div class="mb-4">
+                            <input type="checkbox" id="face-enter-check" class="form-check-input" onchange="toggleSection('face-enter-config')">
+                            <label for="face-enter-check" class="form-check-label fs-6">开启进入课程人脸识别验证</label>
+                        </div>
+                        <div id="face-enter-config" class="ms-4 disabled-section mb-4">
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">匹配失败处理：</label>
+                                <div class="ms-2">
+                                    <!-- 单选按钮，保证互斥 -->
+                                    <input type="radio" name="fail-handle" class="form-check-input me-2" id="forbid-enter" onchange="toggleAbnormalCount(this)">
+                                    <label for="forbid-enter" class="form-check-label">禁止进入课程</label>
+                                    <input type="radio" name="fail-handle" class="form-check-input me-2 ms-4" id="mark-abnormal" onchange="toggleAbnormalCount(this)">
+                                    <label for="mark-abnormal" class="form-check-label">允许进入但标记异常</label>
+                                </div>
+                            </div>
+                            <!-- 异常次数区域 -->
+                            <div id="abnormal-count-area" class="mb-3">
+                                <label class="form-label fw-medium">异常标记累计次数：</label>
+                                <div class="ms-2">
+                                    <input type="radio" name="abnormal-count" class="form-check-input me-2" value="3">
+                                    <label class="form-check-label">3次</label>
+                                    <input type="radio" name="abnormal-count" class="form-check-input me-2 ms-4" value="5">
+                                    <label class="form-check-label">5次</label>
+                                    <input type="radio" name="abnormal-count" class="form-check-input me-2 ms-4" value="custom">
+                                    <label class="form-check-label">自定义</label>
+                                    <input type="number" class="form-control d-inline w-25 ms-2" placeholder="请输入次数" min="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <input type="checkbox" id="face-capture-check" class="form-check-input" onchange="toggleSection('face-capture-config')">
+                            <label for="face-capture-check" class="form-check-label fs-6">开启视频观看抓拍监控</label>
+                        </div>
+                        <div id="face-capture-config" class="ms-4 disabled-section">
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">抓拍模式：</label>
+                                <div class="ms-2">
+                                    <div class="mb-2">
+                                        <input type="radio" name="capture-mode" class="form-check-input me-2" value="timing" onchange="showCustomInput('timing-input')">
+                                        <label class="form-check-label">定时抓拍</label>
+                                        <div id="timing-input" class="ms-4 mt-2 d-none">
+                                            <input type="number" class="form-control d-inline w-25" placeholder="分钟" min="1">
+                                            <span class="me-3">/每</span>
+                                            <input type="number" class="form-control d-inline w-25" placeholder="秒" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="radio" name="capture-mode" class="form-check-input me-2" value="key-point">
+                                        <label class="form-check-label">关键时间点抓拍（视频开始/中间50%/结束）</label>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="radio" name="capture-mode" class="form-check-input me-2" value="random" onchange="showCustomInput('random-input')">
+                                        <label class="form-check-label">随机抓拍</label>
+                                        <div id="random-input" class="ms-4 mt-2 d-none">
+                                            <span>每段视频抓拍</span>
+                                            <input type="number" class="form-control d-inline w-25 ms-2" placeholder="次数" min="1">
+                                            <span>次</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">人脸匹配失败处理：</label>
+                                <div class="ms-2">
+                                    <input type="checkbox" class="form-check-input me-2" id="pause-video">
+                                    <label for="pause-video" class="form-check-label">暂停视频播放</label>
+                                    <input type="checkbox" class="form-check-input me-2 ms-4" id="mark-video-abnormal">
+                                    <label for="mark-video-abnormal" class="form-check-label">继续播放但标记异常</label>
+                                    <input type="checkbox" class="form-check-input me-2 ms-4" id="limit-progress">
+                                    <label for="limit-progress" class="form-check-label">限制学习进度</label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <input type="checkbox" id="clear-score-check" class="form-check-input me-2" onchange="showCustomInput('clear-score-input')">
+                                <label for="clear-score-check" class="form-check-label">匹配失败累计次数清除成绩</label>
+                                <div id="clear-score-input" class="d-none ms-4">
+                                    <span>次数：</span>
+                                    <input type="number" class="form-control d-inline w-25 ms-2" placeholder="请输入次数" min="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary px-4 py-2">
+                        <i class="fa fa-save me-2"></i>保存所有配置
+                    </button>
+                </div>
+            </div>
+
+            <!-- 学生端视频学习页面 -->
+            <div class="tab-pane fade" id="student-page" role="tabpanel">
+                <div class="page-card">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                        <h4 class="text-dark">Python编程基础 - 第二章：变量与数据类型</h4>
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <span class="text-muted"><i class="fa fa-user me-1"></i>学生：李四</span>
+                            <span class="text-muted"><i class="fa fa-tasks me-1"></i>学习进度：40%</span>
+                            <span class="text-danger"><i class="fa fa-exclamation-triangle me-1"></i>人脸异常次数：3次</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- 视频播放区域 -->
+                        <div class="col-md-8">
+                            <div class="video-container">
+                                <div class="face-capture-tip">
+                                    <i class="fa fa-camera me-1"></i>人脸抓拍中（已抓拍2/5次）
+                                </div>
+                                
+                                <!-- 窗口切换提示 -->
+                                <div class="window-warning" id="windowWarning">
+                                    <i class="fa fa-exclamation-circle me-2"></i>检测到窗口切换，视频已暂停！
+                                </div>
+
+                                <!-- 视频播放核心区域 -->
+                                <div class="video-player" id="videoPlayer">
+                                    <!-- 真实视频元素 - 禁用原生控件和交互 -->
+                                    <video id="lessonVideo" poster="https://picsum.photos/1280/720?grayscale">
+                                        <!-- 示例视频源，实际替换为教学视频 -->
+                                        <source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4" type="video/mp4">
+                                        您的浏览器不支持HTML5视频播放
+                                    </video>
+                                </div>
+
+                                <!-- 自定义视频控制栏 - 防拖拽核心 -->
+                                <div class="video-controls">
+                                    <div class="control-group">
+                                        <button class="btn btn-light btn-sm" id="playBtn">
+                                            <i class="fa fa-play me-1"></i>播放
+                                        </button>
+                                        <button class="btn btn-light btn-sm" id="pauseBtn" disabled>
+                                            <i class="fa fa-pause me-1"></i>暂停
+                                        </button>
+                                        <select class="form-select form-select-sm speed-control" disabled>
+                                            <option value="1" selected>1.0x</option>
+                                            <option value="1.5">1.5x</option>
+                                            <option value="2">2.0x</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="control-group">
+                                        <!-- 仅展示进度，禁用交互 -->
+                                        <div class="progress-display">
+                                            <div class="progress-bar" id="videoProgressBar" style="width: 50%"></div>
+                                        </div>
+                                        <div class="time-display" id="timeDisplay">00:30 / 01:00</div>
+                                    </div>
+                                </div>
+
+                                <p class="mt-3 text-warning mb-0">
+                                    <i class="fa fa-exclamation-circle me-1"></i>提示：切换窗口/拖拽进度条将暂停视频，学习时长停止累计
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 任务点进度区域 -->
+                        <div class="col-md-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-header bg-light border-0">
+                                    <h6 class="mb-0 fw-medium"><i class="fa fa-tasks me-1"></i>任务点进度</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-4">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="text-muted">变量讲解视频</span>
+                                            <span class="fw-medium">50%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="text-muted">数据类型课件</span>
+                                            <span class="fw-medium">100%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="text-muted">基础练习题</span>
+                                            <span class="fw-medium">0%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 warning-text">
+                                        <i class="fa fa-info-circle me-1"></i>需完成所有必做任务点才能解锁下一章节
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 切换配置区域激活状态
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('disabled-section');
+        }
+
+        // 显示自定义输入框
+        function showCustomInput(inputId) {
+            // 先隐藏所有自定义输入框
+            const allCustomInputs = document.querySelectorAll('[id$="-input"]');
+            allCustomInputs.forEach(input => input.classList.add('d-none'));
+            // 显示目标输入框
+            const targetInput = document.getElementById(inputId);
+            if (targetInput) {
+                targetInput.classList.remove('d-none');
+            }
+        }
+
+        // 控制异常次数区域的禁用/启用
+        function toggleAbnormalCount(radio) {
+            const abnormalCountArea = document.getElementById('abnormal-count-area');
+            // 如果选中的是"禁止进入课程"，禁用异常次数区域；否则启用
+            if (radio.id === 'forbid-enter') {
+                abnormalCountArea.classList.add('disabled-section');
+            } else {
+                abnormalCountArea.classList.remove('disabled-section');
+            }
+        }
+
+        // ===================== 视频播放控制核心逻辑 =====================
+        // 核心元素获取
+        const video = document.getElementById('lessonVideo');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const progressBar = document.getElementById('videoProgressBar');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const windowWarning = document.getElementById('windowWarning');
+        
+        // 格式化时间（秒转分:秒）
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // 更新进度显示（仅展示，不可操作）
+        function updateProgress() {
+            const progress = (video.currentTime / video.duration) * 100;
+            progressBar.style.width = `${progress}%`;
+            timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+        }
+
+        // 播放视频
+        function playVideo() {
+            video.play();
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+            windowWarning.style.display = 'none';
+        }
+
+        // 暂停视频
+        function pauseVideo(showWarn = false) {
+            video.pause();
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+            // 窗口切换时显示警告
+            if (showWarn) {
+                windowWarning.style.display = 'block';
+                // 3秒后隐藏警告
+                setTimeout(() => {
+                    windowWarning.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // 窗口切换检测（防窗口切换核心）
+        window.addEventListener('blur', function() {
+            if (!video.paused) {
+                pauseVideo(true);
+            }
+        });
+
+        // 视频事件监听
+        video.addEventListener('timeupdate', updateProgress);
+        video.addEventListener('ended', function() {
+            pauseVideo();
+            // 视频播放完成后重置进度
+            video.currentTime = 0;
+            updateProgress();
+        });
+
+        // 按钮点击事件
+        playBtn.addEventListener('click', playVideo);
+        pauseBtn.addEventListener('click', pauseVideo);
+
+        // 防拖拽加固：禁止右键菜单、禁止选择、禁止拖拽
+        video.addEventListener('contextmenu', (e) => e.preventDefault());
+        videoPlayer.addEventListener('dragstart', (e) => e.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            // 禁用空格键（防止通过空格快进）、方向键（防止快进/快退）
+            if ([32, 37, 38, 39, 40].includes(e.keyCode)) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
